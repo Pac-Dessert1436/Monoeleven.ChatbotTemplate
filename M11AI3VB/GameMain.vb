@@ -50,17 +50,13 @@ Public NotInheritable Class GameMain
     End Sub
 
     Protected Overrides Sub Draw(gameTime As GameTime)
-        GraphicsDevice.Clear(Color.AntiqueWhite)
-
-        _spriteBatch.Begin()
-
-        ' Draw title image at the top
-        Dim titleRect = New Rectangle(0, 0, _titleImage.Width, _titleImage.Height) ' Top portion for title
+        ' Draw chat UI below the title (offset Y by 80 for title)
+        ' `_spriteBatch.Begin()` is already called after resetting RenderTarget2D inside chat UI.
+        _chatUI.Draw(_spriteBatch, ScreenWidth, ScreenHeight - 80, New Point(0, 80))
+        ' Draw title image at the top (top portion for title)
+        Dim titleRect As New Rectangle(0, 0, _titleImage.Width, _titleImage.Height)
         _spriteBatch.Draw(_titleImage, titleRect, Color.White)
-
-        ' Draw chat UI below the title
-        _chatUI.Draw(_spriteBatch, ScreenWidth, ScreenHeight - 80, New Point(0, 80)) ' Offset Y by 80 for title
-        _spriteBatch.[End]()
+        _spriteBatch.End()
 
         MyBase.Draw(gameTime)
     End Sub
@@ -74,7 +70,8 @@ Public NotInheritable Class GameMain
     End Sub
 
     Friend Shared Sub Main()
-        Dim game = New GameMain()
-        game.Run()
+        Using game As New GameMain
+            game.Run()
+        End Using
     End Sub
 End Class

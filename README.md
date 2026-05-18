@@ -10,8 +10,8 @@ This template serves as a foundation for developing chatbot applications using t
 
 Note that the template is a **minimal viable product**, limited to English-only functionality and does not integrate with large language models (LLMs) such as DeepSeek or OpenAI.
 
-**Version**: 1.0.1
-**Last Updated**: April 26 2026  
+**Version**: 1.0.2
+**Last Updated**: May 18 2026  
 **Template Names**: `m11ai3` (C#), `m11ai3-vb` (VB.NET)
 
 ### Key Features
@@ -26,6 +26,7 @@ Note that the template is a **minimal viable product**, limited to English-only 
 - **Text Wrapping**: Automatic text wrapping for long messages with proper line spacing
 - **Enhanced Response Mappings**: Expanded keyword-response mappings for richer conversations
 - **Scrollbar Support**: Interactive scrollbar with mouse wheel and drag functionality
+- **`RenderTarget2D` Optimization**: Off-screen rendering buffer for improved performance and rendering flexibility
 
 ## 🚀 Quick Start
 
@@ -73,12 +74,14 @@ High DPI awareness is **disabled by default** in this template. This ensures the
 If you need per-monitor DPI scaling for modern multi-monitor setups or 4K displays, you can enable high DPI mode by **uncommenting the following XML snippet at the end of `app.manifest`**:
 
 ```xml
-<!-- <application xmlns="urn:schemas-microsoft-com:asm.v3">
+<application xmlns="urn:schemas-microsoft-com:asm.v3">
    <windowsSettings>
    <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/pm</dpiAware>
-   <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">permonitorv2,permonitor</dpiAwareness>
+   <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">
+        permonitorv2,permonitor
+    </dpiAwareness>
    </windowsSettings>
-</application> -->
+</application>
 ```
 
 > ⚠️ **Important Notes**:
@@ -135,6 +138,7 @@ M11AI3VB/
 
 ### ChatUI (`ChatUI.cs` / `ChatUI.vb`)
 - **Rendering Pipeline**: Efficient text and UI element rendering
+- **`RenderTarget2D` Implementation**: Off-screen buffer rendering for optimized performance and flexible compositing
 - **Input Handling**: Keyboard event processing and text input management
 - **Chat History**: Persistent message display with scrolling capability
 - **Visual Layout**: Clean, responsive UI design with proper spacing
@@ -204,6 +208,13 @@ Private ReadOnly FixedReplies As New List(Of (keys As String(), reply As String)
 - Mouse wheel sensitivity: 30 pixels per scroll event
 - Supports both mouse wheel and drag interactions
 
+**`RenderTarget2D` Optimization**:
+- Off-screen rendering buffer for the chat box area
+- Dynamic resizing based on chat box dimensions
+- Automatic disposal of previous render target when resized
+- Improved rendering performance by reducing redundant draw calls
+- Enables advanced visual effects and compositing
+
 ### Extending Functionality
 
 - **External APIs**: Integrate with LLM services like OpenAI or DeepSeek
@@ -235,9 +246,11 @@ Private ReadOnly FixedReplies As New List(Of (keys As String(), reply As String)
 - No mobile or console targets configured by default
 
 ### Performance Considerations
+- **`RenderTarget2D` Optimization**: Off-screen rendering buffer reduces redundant draw calls
 - Efficient text rendering with SpriteFont
 - Minimal memory footprint for chat history
 - Optimized update cycles for responsive input handling
+- Proper resource disposal to prevent memory leaks
 
 ## 🐛 Troubleshooting
 

@@ -12,7 +12,7 @@ Public NotInheritable Class ChatUI
     Private _aiIcon As Texture2D
     Private _isDisposed As Boolean = False
 
-    Private ReadOnly _messages As List(Of ChatMessage) = New List(Of ChatMessage)()
+    Private ReadOnly _messages As New List(Of ChatMessage)
     Private _inputText As String = String.Empty
     Private _inputActive As Boolean = True
     Private _waitingForBotReply As Boolean = False
@@ -27,16 +27,18 @@ Public NotInheritable Class ChatUI
     Private _scrollBarRect As Rectangle
     Private _isDraggingScrollBar As Boolean = False
     Private _lastMouseDragPosition As Vector2
-    Private Const ChatBoxMargin As Integer = 10
-    Private Const InputBoxHeight As Integer = 50
-    Private Const SendButtonWidth As Integer = 80
-    Private Const LineSpacing As Integer = 5
-    Private Const MaxLineWidth As Integer = 500
-    Private Const MessagePadding As Integer = 10
-    Private Const BubblePadding As Integer = 15
-    Private Const IconSize As Integer = 32
-    Private Const ScrollBarWidth As Integer = 10
-    Private Const ScrollBarMinHeight As Integer = 20
+    Private _chatboxRenderTarget As RenderTarget2D
+
+    Private Const CHAT_BOX_MARGIN As Integer = 10
+    Private Const INPUT_BOX_HEIGHT As Integer = 50
+    Private Const SEND_BUTTON_WIDTH As Integer = 80
+    Private Const LINE_SPACING As Integer = 5
+    Private Const MAX_LINE_WIDTH As Integer = 500
+    Private Const MESSAGE_PADDING As Integer = 10
+    Private Const BUBBLE_PADDING As Integer = 15
+    Private Const ICON_SIZE As Integer = 32
+    Private Const SCROLL_BAR_WIDTH As Integer = 10
+    Private Const SCROLL_BAR_MIN_HEIGHT As Integer = 20
 
     Public Sub New(font As SpriteFont, graphicsDevice As GraphicsDevice)
         _font = font
@@ -103,7 +105,7 @@ Public NotInheritable Class ChatUI
     Private Shared Function GetCharacterFromKey(key As Keys, keyboardState As KeyboardState) As String
         Dim shiftPressed = keyboardState.IsKeyDown(Keys.LeftShift) OrElse keyboardState.IsKeyDown(Keys.RightShift)
 
-        Select case key
+        Select Case key
             Case Keys.Space : Return " "
             Case Keys.A : Return If(shiftPressed, "A", "a")
             Case Keys.B : Return If(shiftPressed, "B", "b")
@@ -181,14 +183,14 @@ Public NotInheritable Class ChatUI
 
     Private Sub HandleMouseInput(mouseState As MouseState)
         Dim inputBoxRect As New Rectangle(
-            ChatBoxMargin,
-            _graphicsDevice.Viewport.Height - InputBoxHeight - ChatBoxMargin,
-            _graphicsDevice.Viewport.Width - ChatBoxMargin * 2,
-            InputBoxHeight
+            CHAT_BOX_MARGIN,
+            _graphicsDevice.Viewport.Height - INPUT_BOX_HEIGHT - CHAT_BOX_MARGIN,
+            _graphicsDevice.Viewport.Width - CHAT_BOX_MARGIN * 2,
+            INPUT_BOX_HEIGHT
         )
         Dim sendButtonRect As New Rectangle(
-            inputBoxRect.Right - SendButtonWidth - 5, inputBoxRect.Y + 5,
-            SendButtonWidth, inputBoxRect.Height - 10
+            inputBoxRect.Right - SEND_BUTTON_WIDTH - 5, inputBoxRect.Y + 5,
+            SEND_BUTTON_WIDTH, inputBoxRect.Height - 10
         )
 
         ' Handle send button click
@@ -199,10 +201,10 @@ Public NotInheritable Class ChatUI
 
         ' Handle scrollbar interaction
         Dim chatBoxRect As New Rectangle(
-            ChatBoxMargin,
-            ChatBoxMargin,
-            _graphicsDevice.Viewport.Width - ChatBoxMargin * 2,
-            _graphicsDevice.Viewport.Height - InputBoxHeight - ChatBoxMargin * 3
+            CHAT_BOX_MARGIN,
+            CHAT_BOX_MARGIN,
+            _graphicsDevice.Viewport.Width - CHAT_BOX_MARGIN * 2,
+            _graphicsDevice.Viewport.Height - INPUT_BOX_HEIGHT - CHAT_BOX_MARGIN * 3
         )
 
         If mouseState.LeftButton = ButtonState.Pressed AndAlso
@@ -246,51 +248,71 @@ Public NotInheritable Class ChatUI
         _messages.Add(New ChatMessage With {.Sender = sender, .Text = text})
     End Sub
 
-    Public Sub Draw(spriteBatch As SpriteBatch, screenWidth As Integer, screenHeight As Integer, Optional positionOffset As Point = DirectCast(Nothing, Point))
+    Public Sub Draw(spriteBatch As SpriteBatch, screenWidth As Integer, screenHeight As Integer, Optional positionOffset As Point = Nothing)
         Dim chatBoxRect As New Rectangle(
-            ChatBoxMargin + positionOffset.X, 
-            ChatBoxMargin + positionOffset.Y, 
-            screenWidth - ChatBoxMargin * 2, 
-            screenHeight - InputBoxHeight - ChatBoxMargin * 3)
+            CHAT_BOX_MARGIN + positionOffset.X,
+            CHAT_BOX_MARGIN + positionOffset.Y,
+            screenWidth - CHAT_BOX_MARGIN * 2,
+            screenHeight - INPUT_BOX_HEIGHT - CHAT_BOX_MARGIN * 3)
         Dim inputBoxRect As New Rectangle(
-            ChatBoxMargin + positionOffset.X, 
-            positionOffset.Y + screenHeight - InputBoxHeight - ChatBoxMargin, 
-            screenWidth - ChatBoxMargin * 2, InputBoxHeight)
-        Dim sendButtonRect As New Rectangle(inputBoxRect.Right - SendButtonWidth - 5, inputBoxRect.Y + 5, SendButtonWidth, inputBoxRect.Height - 10)
+            CHAT_BOX_MARGIN + positionOffset.X,
+            positionOffset.Y + screenHeight - INPUT_BOX_HEIGHT - CHAT_BOX_MARGIN,
+            screenWidth - CHAT_BOX_MARGIN * 2, INPUT_BOX_HEIGHT)
+        Dim sendButtonRect As New Rectangle(
+            inputBoxRect.Right - SEND_BUTTON_WIDTH - 5,
+            inputBoxRect.Y + 5, SEND_BUTTON_WIDTH,
+            inputBoxRect.Height - 10)
 
-        Me.DrawChatBox(spriteBatch, chatBoxRect)
-        Me.DrawInputBox(spriteBatch, inputBoxRect, sendButtonRect)
+        DrawChatBox(spriteBatch, chatBoxRect)
+        DrawInputBox(spriteBatch, inputBoxRect, sendButtonRect)
     End Sub
 
+    ' TODO: Introduce RenderTarget2D for chat box area
     Private Sub DrawChatBox(spriteBatch As SpriteBatch, rect As Rectangle)
-        spriteBatch.Draw(_pixel, rect, Color.WhiteSmoke)
-        spriteBatch.Draw(_pixel, New Rectangle(rect.X, rect.Y, rect.Width, 2), Color.Gray)
+        ' Initialize or resize render target if needed
+        If _chatboxRenderTarget Is Nothing OrElse _chatboxRenderTarget.Width <> rect.Width OrElse
+            _chatboxRenderTarget.Height <> rect.Height Then
+            _chatboxRenderTarget?.Dispose()
+            _chatboxRenderTarget = New RenderTarget2D(_graphicsDevice, rect.Width, rect.Height)
+        End If
 
-        Dim yPos = rect.Y + 10 - _scrollOffset
+        ' Set render target
+        _graphicsDevice.SetRenderTarget(_chatboxRenderTarget)
+        _graphicsDevice.Clear(Color.WhiteSmoke)
+
+        ' Draw content to render target
+        spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend)
+        ' Draw top border
+        spriteBatch.Draw(_pixel, New Rectangle(0, 0, rect.Width, 2), Color.Gray)
+
+        ' Draw messages
+        Dim yPos = 10 - _scrollOffset
         For Each message In _messages
-            Dim wrappedLines = WrapText(message.Text, ChatUI.MaxLineWidth)
+            Dim wrappedLines = WrapText(message.Text, ChatUI.MAX_LINE_WIDTH)
             Dim maxLineWidth As Single = 0F
             For Each line In wrappedLines
                 Dim lineWidth = _font.MeasureString(line).X
-                If lineWidth > maxLineWidth Then
-                    maxLineWidth = lineWidth
-                End If
-            Next
+                If lineWidth > maxLineWidth Then maxLineWidth = lineWidth
+            Next line
 
-            Dim totalTextHeight = wrappedLines.Count * _font.LineSpacing + (wrappedLines.Count - 1) * LineSpacing
-            Dim bubbleHeight = Math.Max(totalTextHeight + BubblePadding * 2, IconSize + BubblePadding * 2)
-            Dim bubbleWidth = maxLineWidth + BubblePadding * 2 + IconSize + MessagePadding
+            Dim totalTextHeight = wrappedLines.Count * _font.LineSpacing + (wrappedLines.Count - 1) * LINE_SPACING
+            Dim bubbleHeight = Math.Max(totalTextHeight + BUBBLE_PADDING * 2, ICON_SIZE + BUBBLE_PADDING * 2)
+            Dim bubbleWidth = maxLineWidth + BUBBLE_PADDING * 2 + ICON_SIZE + MESSAGE_PADDING
 
             Dim isUserMessage = message.Sender Is "User"
-            Dim bubbleX = If(isUserMessage, rect.Right - bubbleWidth - 20, rect.X + 10)
+            Dim bubbleX = If(isUserMessage, rect.Width - bubbleWidth - 20, 10)
 
-            Dim bubbleRect = New Rectangle(CInt(MathF.Round(bubbleX)), yPos, CInt(bubbleWidth), CInt(bubbleHeight))
+            Dim bubbleRect = New Rectangle(
+                CInt(MathF.Round(bubbleX)), yPos, CInt(bubbleWidth), bubbleHeight
+            )
             Dim bubbleColor = If(isUserMessage, New Color(220, 248, 198), New Color(230, 230, 250))
             spriteBatch.Draw(_pixel, bubbleRect, bubbleColor)
 
             Dim iconTexture = If(isUserMessage, _userIcon, _aiIcon)
             If iconTexture IsNot Nothing Then
-                Dim iconRect = New Rectangle(If(isUserMessage, bubbleRect.Right - IconSize - 5, bubbleRect.X + 5), CInt(bubbleRect.Y + (bubbleHeight - IconSize) / 2), IconSize, IconSize)
+                Dim iconRect = New Rectangle(
+                    If(isUserMessage, bubbleRect.Right - ICON_SIZE - 5, bubbleRect.X + 5),
+                        CInt(bubbleRect.Y + (bubbleHeight - ICON_SIZE) / 2), ICON_SIZE, ICON_SIZE)
                 spriteBatch.Draw(iconTexture, iconRect, Color.White)
             End If
 
@@ -298,16 +320,20 @@ Public NotInheritable Class ChatUI
             For i = 0 To wrappedLines.Count - 1
                 Dim lineText = wrappedLines(i)
                 Dim textSize = _font.MeasureString(lineText)
-                Dim textPosition = New Vector2(If(isUserMessage, bubbleRect.Right - textSize.X - IconSize - MessagePadding, bubbleRect.X + IconSize + MessagePadding), textStartY + i * (_font.LineSpacing + LineSpacing))
+                Dim textPosition = New Vector2(
+                    If(isUserMessage, bubbleRect.Right - textSize.X - ICON_SIZE - MESSAGE_PADDING,
+                        bubbleRect.X + ICON_SIZE + MESSAGE_PADDING),
+                    CSng(textStartY + i * (_font.LineSpacing + LINE_SPACING)))
                 spriteBatch.DrawString(_font, lineText, textPosition, Color.Black)
             Next
 
-            yPos += CInt(bubbleHeight) + MessagePadding
+            yPos += bubbleHeight + MESSAGE_PADDING
         Next
 
+        ' Calculate scroll values
         Dim totalMessagesHeight = 0F
         For Each message In _messages
-            Dim wrappedLines = WrapText(message.Text, ChatUI.MaxLineWidth)
+            Dim wrappedLines = WrapText(message.Text, ChatUI.MAX_LINE_WIDTH)
             Dim maxLineWidth As Single = 0F
             For Each line In wrappedLines
                 Dim lineWidth = _font.MeasureString(line).X
@@ -316,21 +342,32 @@ Public NotInheritable Class ChatUI
                 End If
             Next
 
-            Dim totalTextHeight = wrappedLines.Count * _font.LineSpacing + (wrappedLines.Count - 1) * LineSpacing
-            Dim bubbleHeight = Math.Max(totalTextHeight + BubblePadding * 2, IconSize + BubblePadding * 2)
-            totalMessagesHeight += bubbleHeight + MessagePadding
+            Dim totalTextHeight = wrappedLines.Count * _font.LineSpacing + (wrappedLines.Count - 1) * LINE_SPACING
+            Dim bubbleHeight = Math.Max(totalTextHeight + BUBBLE_PADDING * 2, ICON_SIZE + BUBBLE_PADDING * 2)
+            totalMessagesHeight += bubbleHeight + MESSAGE_PADDING
         Next
 
         _maxScroll = Math.Max(0, CInt(totalMessagesHeight - rect.Height + 20))
 
-        Dim scrollBarHeight = Math.Max(ScrollBarMinHeight, CInt(rect.Height / Math.Max(totalMessagesHeight, rect.Height) * rect.Height))
-        Dim scrollBarY = rect.Y + 10 + CInt(_scrollOffset / CSng(Math.Max(_maxScroll, 1)) * (rect.Height - 10 - scrollBarHeight))
+        Dim scrollBarHeight = Math.Max(SCROLL_BAR_MIN_HEIGHT, CInt(rect.Height / Math.Max(totalMessagesHeight, rect.Height) * rect.Height))
+        Dim scrollBarY = 10 + CInt(_scrollOffset / CSng(Math.Max(_maxScroll, 1)) * (rect.Height - 10 - scrollBarHeight))
 
-        _scrollBarRect = New Rectangle(rect.Right - ScrollBarWidth - 5, scrollBarY, ScrollBarWidth, scrollBarHeight)
+        _scrollBarRect = New Rectangle(rect.Width - SCROLL_BAR_WIDTH - 5, scrollBarY, SCROLL_BAR_WIDTH, scrollBarHeight)
 
-        spriteBatch.Draw(_pixel, New Rectangle(_scrollBarRect.X - 2, rect.Y + 10, ScrollBarWidth + 4, rect.Height - 20), Color.LightGray)
+        ' Draw scrollbar track
+        spriteBatch.Draw(_pixel, New Rectangle(_scrollBarRect.X - 2, 10, SCROLL_BAR_WIDTH + 4, rect.Height - 20), Color.LightGray)
 
+        ' Draw scrollbar thumb
         spriteBatch.Draw(_pixel, _scrollBarRect, If(_isDraggingScrollBar, Color.DarkGray, Color.Gray))
+        spriteBatch.End()
+
+        ' Reset render target and draw the chatbox to the screen
+        _graphicsDevice.SetRenderTarget(Nothing)
+        _graphicsDevice.Clear(Color.AntiqueWhite)
+        spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend)
+        spriteBatch.Draw(_chatboxRenderTarget, New Vector2(rect.X, rect.Y), Color.White)
+        ' NOTE: Do not call spriteBatch.End() here; the SpriteBatch continues drawing graphics
+        '       on the GameMain.Draw() call.
     End Sub
 
     Private Sub DrawInputBox(spriteBatch As SpriteBatch, inputRect As Rectangle, sendButtonRect As Rectangle)
@@ -363,6 +400,9 @@ Public NotInheritable Class ChatUI
         If Not _isDisposed Then
             If disposing Then
                 _pixel.Dispose()
+                If _chatboxRenderTarget IsNot Nothing Then
+                    _chatboxRenderTarget.Dispose()
+                End If
             End If
             _isDisposed = True
         End If

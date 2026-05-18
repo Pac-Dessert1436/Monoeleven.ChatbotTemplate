@@ -57,16 +57,12 @@ public class GameMain : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.AntiqueWhite);
-
-        _spriteBatch.Begin();
-        
-        // Draw title image at the top
-        var titleRect = new Rectangle(0, 0, _titleImage.Width, _titleImage.Height); // Top portion for title
+        // Draw chat UI below the title (offset Y by 80 for title)
+        // `_spriteBatch.Begin()` is already called after resetting RenderTarget2D inside chat UI.
+        _chatUI.Draw(_spriteBatch, ScreenWidth, ScreenHeight - 80, new Point(0, 80));
+        // Draw title image at the top (top portion for title)
+        var titleRect = new Rectangle(0, 0, _titleImage.Width, _titleImage.Height);
         _spriteBatch.Draw(_titleImage, titleRect, Color.White);
-        
-        // Draw chat UI below the title
-        _chatUI.Draw(_spriteBatch, ScreenWidth, ScreenHeight - 80, new Point(0, 80)); // Offset Y by 80 for title
         _spriteBatch.End();
 
         base.Draw(gameTime);
