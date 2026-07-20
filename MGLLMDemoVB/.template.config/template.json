@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Pac-Dessert1436",
+  "classifications": [
+    "Common",
+    "MonoGame",
+    "DesktopGL",
+    "LLM"
+  ],
+  "identity": "PacDessert1436.MonoGame.LLM.Template.VisualBasic",
+  "name": "MonoGame LLM Template (VB.NET)",
+  "shortName": "mgllmvb",
+  "tags": {
+    "language": "VB",
+    "type": "project"
+  },
+  "sourceName": "MGLLMDemoVB",
+  "preferNameDirectory": true,
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [
+            "bin/**/*",
+            "obj/**/*",
+            ".vs/**/*",
+            ".vscode/**/*",
+            "Content/bin/**/*",
+            "Content/obj/**/*"
+          ]
+        }
+      ]
+    }
+  ]
+}

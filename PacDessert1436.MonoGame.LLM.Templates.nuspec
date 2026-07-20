@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>PacDessert1436.MonoGame.LLM.Templates</id>
+        <version>1.1.1</version>
+        <title>MonoGame LLM Templates</title>
+        <authors>Pac-Dessert1436</authors>
+        <description>A collection of templates for building LLM-powered chatbot applications with
+            MonoGame, providing ready-to-use project templates for both C# and VB.NET.</description>
+        <projectUrl>https://github.com/Pac-Dessert1436/PacDessert1436.MonoGame.LLM.Templates</projectUrl>
+        <license type="expression">BSD-3-Clause</license>
+        <readme>README.md</readme>
+        <repository type="git" url="https://github.com/Pac-Dessert1436/PacDessert1436.MonoGame.LLM.Templates" />
+        <tags>chatbot;LLM;monogame;gamedev;csharp;vbnet;gui;ui;desktopgl</tags>
+        <packageTypes>
+            <packageType name="Template" />
+        </packageTypes>
+    </metadata>
+    <files>
+        <!-- Template content for C# project -->
+        <file src="MGLLMDemoCSharp\**\*" target="content\MGLLMDemoCSharp\" />
+
+        <!-- Template content for VB.NET project -->
+        <file src="MGLLMDemoVB\**\*" target="content\MGLLMDemoVB\" />
+
+        <!-- Package metadata files -->
+        <file src="README.md" target="README.md" />
+        <file src="LICENSE" target="content\" />
+    </files>
+</package>

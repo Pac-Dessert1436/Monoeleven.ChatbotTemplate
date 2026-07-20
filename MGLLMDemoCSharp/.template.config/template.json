@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Pac-Dessert1436",
+  "classifications": [
+    "Common",
+    "MonoGame",
+    "DesktopGL",
+    "LLM"
+  ],
+  "identity": "PacDessert1436.MonoGame.LLM.Template.CSharp",
+  "name": "MonoGame LLM Template (C#)",
+  "shortName": "mgllm",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "MGLLMDemoCSharp",
+  "preferNameDirectory": true,
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [
+            "bin/**/*",
+            "obj/**/*",
+            ".vs/**/*",
+            ".vscode/**/*",
+            "Content/bin/**/*",
+            "Content/obj/**/*"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,291 +1,311 @@
-# Monoeleven.ChatbotTemplate
+# MonoGame LLM Templates, by Pac-Dessert1436
 
-![](screenshot.png)
+## Important Notice
+This is a personal project, and is not affiliated with DeepSeek or any other LLM provider. It is based on my earlier MonoGame chatbot template (version 1.0.x), which I have now deprecated after identifying potential trademark concerns.
 
-A comprehensive MonoGame-based chatbot template package providing a minimal viable product (MVP) for building interactive chatbot applications. This template supports both C# and VB.NET implementations with native English language interaction capabilities.
+The current version is 1.1.1, intended as a focused maintenance release to:
+- avoid the remaining trademark-related risk by keeping the project name and branding aligned with the renamed template
+- fix a security issue from 1.1.0 that included a real DeepSeek API key (creating an avoidable exposure risk)
 
-## 📋 Overview
+This version removes the exposure of the API key, utilizing safer configuration practices. _Despite the fact that I must pause active development while preparing for the Postgraduate Entrance Exam, I still want to publish this release so the project can be shared safely and responsibly._
 
-This template serves as a foundation for developing chatbot applications using the MonoGame framework. It includes pre-configured UI components, response logic, and a clean architecture that can be easily extended for more advanced functionality.
+### Current Version: 1.1.1
+⚠️ **Active development is paused** while I prepare for the Postgraduate Entrance Exam (~150 days remaining). This release is intentionally limited to:
+- Resolving trademark concerns through the renamed project structure and documentation
+- Removing the accidental API-key exposure risk from the shipped template
+- Keeping the project functional and safe for users
 
-Note that the template is a **minimal viable product**, limited to English-only functionality and does not integrate with large language models (LLMs) such as DeepSeek or OpenAI.
+No new features will be added during this period, but critical bug fixes may be addressed if time permits.
 
-**Version**: 1.0.2
-**Last Updated**: May 18 2026  
-**Template Names**: `m11ai3` (C#), `m11ai3-vb` (VB.NET)
+## Overview
 
-### Key Features
+_PacDessert1436.MonoGame.LLM.Templates_ is a collection of templates for building LLM-powered chatbot applications with MonoGame. It provides ready-to-use project templates for both C# and VB.NET, featuring:
 
-- **Dual Language Support**: Choose between C# or VB.NET implementations
-- **Clean Architecture**: Separated UI, logic, and game lifecycle components
-- **Responsive Chat Interface**: User-friendly UI with persistent chat history
-- **Pre-configured Responses**: Built-in response mappings and randomized reply generation
-- **Keyboard-Driven Input**: Seamless text entry with Enter key submission
-- **Natural Interaction**: 1-second delayed auto-reply for realistic conversation flow
-- **MonoGame Framework**: Cross-platform compatibility with DesktopGL target
-- **Text Wrapping**: Automatic text wrapping for long messages with proper line spacing
-- **Enhanced Response Mappings**: Expanded keyword-response mappings for richer conversations
-- **Scrollbar Support**: Interactive scrollbar with mouse wheel and drag functionality
-- **`RenderTarget2D` Optimization**: Off-screen rendering buffer for improved performance and rendering flexibility
+- **DeepSeek API Integration**: Seamless connectivity to DeepSeek's powerful language models
+- **Built-in Chat UI**: Pre-designed chat interface with message history and user/bot avatars
+- **Configuration System**: Easy API key management and model parameter tuning
+- **Chat Logging**: Automatic conversation history saving in YAML format
+- **Cross-Platform Support**: Works on all MonoGame-supported platforms (DesktopGL, Windows, etc.)
 
-## 🚀 Quick Start
+> **Tip**: The LLM provider integrated in this project can be switched to other providers if needed. See [Customization Examples](#customization-examples) for details.
+
+### Known Limitations
+
+- **English-Only Input**: The current template only supports pure English text input. Adding Chinese input support would require significant modifications to the text rendering and input handling systems, due to MonoGame's limitations with non-ASCII character rendering and input processing.
+
+## Quick Start
 
 ### Prerequisites
-
 - [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) or later
-- [MonoGame Framework](https://www.monogame.net/downloads/) (included via NuGet)
-- **IDE**: Visual Studio 2026, Visual Studio Code, or any other .NET-compatible IDE (e.g., Rider, ReSharper, etc.)
+- [MonoGame 3.8.4](https://www.monogame.net) or later
+- A DeepSeek API key (get one at [https://platform.deepseek.com/](https://platform.deepseek.com/))
 
 ### Installation
-
-Install the template package globally:
-
+1. Install the template package:
 ```bash
-dotnet new install Monoeleven.ChatbotTemplate
+dotnet new install PacDessert1436.MonoGame.LLM.Templates
 ```
 
-This command installs both C# and VB.NET templates simultaneously.
-
-### Creating Projects
-
-#### C# Implementation
+2. Create a new project using your preferred template:
 ```bash
-dotnet new m11ai3 -o MyChatbotProject
-cd MyChatbotProject
+# C# Template
+dotnet new mgllm -n MyMonoGameChatbot
+
+# VB.NET Template
+dotnet new mgllmvb -n MyMonoGameChatbot
 ```
 
-#### VB.NET Implementation
-```bash
-dotnet new m11ai3-vb -o MyChatbotProject
-cd MyChatbotProject
-```
-
-### Building and Running
-
-```bash
-dotnet build
-dotnet run
-```
-
-### Enabling High DPI Mode (Optional)
-
-High DPI awareness is **disabled by default** in this template. This ensures the application renders at a **native 800x600 pixel resolution**, consistent with classic game frameworks like Pygame - no automatic scaling, blurring, or UI shrinkage on high-resolution displays.
-
-If you need per-monitor DPI scaling for modern multi-monitor setups or 4K displays, you can enable high DPI mode by **uncommenting the following XML snippet at the end of `app.manifest`**:
-
-```xml
-<application xmlns="urn:schemas-microsoft-com:asm.v3">
-   <windowsSettings>
-   <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/pm</dpiAware>
-   <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">
-        permonitorv2,permonitor
-    </dpiAwareness>
-   </windowsSettings>
-</application>
-```
-
-> ⚠️ **Important Notes**:
-> - Enabling high DPI mode will let Windows automatically scale the window to match your display's DPI, which may make the 800x600 UI appear smaller on high-resolution screens.
-> - Disable this setting (default) if you want a fixed, pixel-perfect 800x600 canvas without any system scaling.
-
-## 🏗️ Project Structure
-
-### C# Implementation (`M11AI3CSharp/`)
-
-```
-M11AI3CSharp/
-├── ChatBotLogic.cs          # Core business logic and response generation
-├── ChatUI.cs                # UI rendering pipeline and input handling
-├── GameMain.cs             # Primary game lifecycle management
-├── Content/
-│   ├── Fonts/               # SpriteFont assets for text rendering
-│   │   ├── ChatFontEN.spritefont
-│   │   └── RakutenGlobal-B.otf
-│   └── Images/              # UI icons and visual assets
-│       ├── m11_icon.png
-│       ├── monoeleven_title.png
-│       └── user_icon.png
-├── M11AI3CSharp.csproj      # Project configuration
-└── app.manifest            # Application manifest
-```
-
-### VB.NET Implementation (`M11AI3VB/`)
-
-```
-M11AI3VB/
-├── ChatBotLogic.vb          # Core business logic and response generation
-├── ChatUI.vb                # UI rendering pipeline and input handling
-├── GameMain.vb              # Primary game lifecycle management
-├── Content/
-│   ├── Fonts/               # SpriteFont assets for text rendering
-│   │   ├── ChatFontEN.spritefont
-│   │   └── RakutenGlobal-B.otf
-│   └── Images/              # UI icons and visual assets
-│       ├── m11_icon.png
-│       ├── monoeleven_title.png
-│       └── user_icon.png
-├── M11AI3VB.vbproj          # Project configuration
-└── app.manifest            # Application manifest
-```
-
-## 🔧 Core Components
-
-### ChatBotLogic (`ChatBotLogic.cs` / `ChatBotLogic.vb`)
-- **Response Mapping**: Pre-configured keyword-to-response mappings
-- **Randomized Replies**: Dynamic response generation for natural conversation
-- **Input Processing**: Text normalization and keyword recognition
-- **State Management**: Conversation flow and context handling
-
-### ChatUI (`ChatUI.cs` / `ChatUI.vb`)
-- **Rendering Pipeline**: Efficient text and UI element rendering
-- **`RenderTarget2D` Implementation**: Off-screen buffer rendering for optimized performance and flexible compositing
-- **Input Handling**: Keyboard event processing and text input management
-- **Chat History**: Persistent message display with scrolling capability
-- **Visual Layout**: Clean, responsive UI design with proper spacing
-- **Text Wrapping**: Automatic line wrapping for long messages with configurable max width
-- **Scrollbar System**: Interactive scrollbar supporting mouse wheel and drag interactions
-
-### GameMain (`GameMain.cs` / `GameMain.vb`)
-- **Game Lifecycle**: Initialization, update, and draw cycles
-- **Resource Management**: Content loading and disposal
-- **Window Configuration**: Display settings and window management
-- **Event Routing**: Input event distribution to appropriate components
-
-## 🎨 Customization
-
-### Adding New Responses
-
-- **C# Version**: Add new keyword-response pairs in `ChatBotLogic.cs`
-```csharp
-// Example: Add new keyword-response pairs in the fixed replies collection
-private static readonly List<(string[] keys, string reply)> FixedReplies =
-[
-    // ... Pre-defined responses in the template project ...
-
-    // Add custom responses in this format:
-    (new[] { "hello", "hi", "hey" }, "Hello there!"),
-    (new[] { "help" }, "I can answer questions about...")
-];
-```
-
-- **VB.NET Version**: Add new keyword-response pairs in `ChatBotLogic.vb`
-```vb
-' Example: Add new keyword-response pairs in the fixed replies collection
-Private ReadOnly FixedReplies As New List(Of (keys As String(), reply As String)) From {
-    ' ... Pre-defined responses in the template project ...
-
-    ' Add custom responses in this format:
-    ({"hello", "hi", "hey"}, "Hello there!"),
-    ({"help"}, "I can answer questions about...")
+### Configuration
+1. Navigate to your project directory
+2. Create a `mgllm-config.json` file with your API key:
+```json
+{
+  "api_key": "your_deepseek_api_key_here",
+  "system_prompt": ["You are a helpful assistant.", "Respond in a friendly and concise manner."],
+  "model_params": {
+    "temperature": 0.7,
+    "max_tokens": 500,
+    "frequency_penalty": 0.3,
+    "presence_penalty": 0.3
+  }
 }
 ```
 
-**Pre-defined Response Categories**:
-- **Greetings**: "hello", "hi", "hey", "how are you"
-- **Farewells**: "bye", "goodbye"
-- **Information**: "time", "weather", "version", "name", "creator"
-- **Help**: "help", "what can you do"
-- **Programming**: "csharp", "c#", "c sharp", "monogame", "programming", "code"
-- **AI Topics**: "ai", "artificial intelligence", "chatbot", "chat bot"
-- **Entertainment**: "joke", "tell me a joke"
-- **Project**: "monoeleven", "mono11"
+3. Build and run the application:
+```bash
+dotnet run
+```
 
-### UI Customization
+## Features
 
-- **Fonts**: Replace font files in `Content/Fonts/`
-- **Images**: Update UI assets in `Content/Images/`
-- **Colors**: Modify color schemes in the UI rendering code
-- **Layout**: Adjust positioning and sizing in `ChatUI` components
+### Core Functionality
+- Real-time chat interface with message bubbles
+- Support for long conversations with context retention
+- Configurable model parameters (temperature, max tokens, etc.)
+- Automatic chat log persistence
+- Error handling for API requests
 
-**Text Wrapping Configuration**:
-- Max line width: 500 pixels (configurable via `MaxLineWidth` constant)
-- Line spacing: 5 pixels (configurable via `LineSpacing` constant)
-- Automatic word wrapping for messages exceeding max width
+### Technical Details
+- Uses DeepSeek's `deepseek-v4-flash` model by default
+- Implements proper HTTP client disposal and resource management
+- Follows C# nullable reference type guidelines
+- YAML serialization for chat logs using YamlDotNet
+- JSON configuration with fallback values
 
-**Scrollbar Configuration**:
-- Scrollbar width: 10 pixels (configurable via `ScrollBarWidth` constant)
-- Minimum scrollbar height: 20 pixels (configurable via `ScrollBarMinHeight` constant)
-- Mouse wheel sensitivity: 30 pixels per scroll event
-- Supports both mouse wheel and drag interactions
+## Template Structure
 
-**`RenderTarget2D` Optimization**:
-- Off-screen rendering buffer for the chat box area
-- Dynamic resizing based on chat box dimensions
-- Automatic disposal of previous render target when resized
-- Improved rendering performance by reducing redundant draw calls
-- Enables advanced visual effects and compositing
+The template provides a clean separation of concerns:
+- `GameMain.cs`: Main game loop and initialization
+- `ChatUI.cs`: Chat interface rendering and input handling
+- `ChatBotLogic.cs`: LLM API integration and business logic
+- `mgllm-config.json`: Configuration file (user-editable)
+- `mgllm-chatlog.yml`: Auto-generated conversation history
 
-### Extending Functionality
+## Customization Examples
 
-- **External APIs**: Integrate with LLM services like OpenAI or DeepSeek
-- **Multi-language Support**: Add localization for additional languages
-- **File I/O**: Implement conversation logging or save/load functionality
-- **Audio**: Add text-to-speech or sound effects
+### Swapping LLM Provider (C# Example)
 
-## 📦 NuGet Dependencies
+Here's how you can modify the `ChatBotLogic.cs` to use OpenAI instead of DeepSeek.
 
-### C# Version
-- `MonoGame.Framework.DesktopGL` (3.8.*) - Core MonoGame framework
-- `MonoGame.Content.Builder.Task` (3.8.*) - Content pipeline build tools
-- `Gum.MonoGame` (2026.3.14.1) - UI framework integration
+First, add these model classes alongside the existing `Message` and `Choice` classes:
 
-### VB.NET Version
-- `MonoGame.Framework.DesktopGL` (3.8.*) - Core MonoGame framework
-- `MonoGame.Content.Builder.Task` (3.8.*) - Content pipeline build tools
+```csharp
+// Add these classes for OpenAI integration
+public sealed class OpenAIRequest
+{
+    public string? Model { get; set; } = "gpt-4o-mini";
+    public List<Message>? Messages { get; set; }
+    public double Temperature { get; set; } = 0.7;
+    [JsonPropertyName("max_tokens")]
+    public int MaxTokens { get; set; } = 500;
+}
 
-## 🔍 Development Notes
+public sealed class OpenAIResponse
+{
+    public List<Choice>? Choices { get; set; }
+    [JsonPropertyName("usage")]
+    public UsageInfo? Usage { get; set; }
+}
 
-### Content Pipeline
-- All assets are processed through MonoGame's content pipeline
-- Fonts and images are compiled to `.xnb` format during build
-- Content rebuilds automatically when source files change
+public sealed class UsageInfo
+{
+    [JsonPropertyName("prompt_tokens")]
+    public int PromptTokens { get; set; }
+    [JsonPropertyName("completion_tokens")]
+    public int CompletionTokens { get; set; }
+    [JsonPropertyName("total_tokens")]
+    public int TotalTokens { get; set; }
+}
+```
 
-### Platform Support
-- Primary target: DesktopGL (Windows, Linux, macOS)
-- Cross-platform compatibility with MonoGame framework
-- No mobile or console targets configured by default
+Then, replace the `GetDeepSeekResponseAsync` method (and its associated `DeepSeekApiUrl` constant) with this OpenAI version:
 
-### Performance Considerations
-- **`RenderTarget2D` Optimization**: Off-screen rendering buffer reduces redundant draw calls
-- Efficient text rendering with SpriteFont
-- Minimal memory footprint for chat history
-- Optimized update cycles for responsive input handling
-- Proper resource disposal to prevent memory leaks
+```csharp
+private const string OpenAIApiUrl = "https://api.openai.com/v1/chat/completions";
 
-## 🐛 Troubleshooting
+public async static Task<string> GetOpenAIResponseAsync(string userMessage, List<Message> conversationHistory = null!)
+{
+    using var httpClient = new HttpClient();
+    httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.ApiKey}");
 
-### Common Issues
+    var messages = new List<Message>()
+    {
+        new()
+        {
+            Role = "system",
+            Content = string.Join("\n", Config.SystemPrompt!)
+        }
+    };
 
-**Build Errors:**
-- Ensure MonoGame Content Builder tools are installed
-- Verify .NET 10.0 SDK is properly installed
-- Check for missing NuGet package references
+    if (conversationHistory is not null)
+    {
+        foreach (Message msg in conversationHistory)
+            messages.Add(new Message() { Role = msg.Role, Content = msg.Content });
+    }
+    messages.Add(new Message() { Role = "user", Content = userMessage });
 
-**Runtime Issues:**
-- Confirm content files are properly built
-- Verify graphics driver compatibility
-- Check system requirements for MonoGame
+    var requestBody = new OpenAIRequest()
+    {
+        Model = "gpt-4o-mini",
+        Messages = messages,
+        Temperature = Config.ModelParams!.Temperature,
+        MaxTokens = Config.ModelParams.MaxTokens
+    };
 
-### Debugging Tips
+    var options = new JsonSerializerOptions()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+    string jsonContent = JsonSerializer.Serialize(requestBody, options);
+    var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-- Enable debug logging in the chat logic
-- Use Visual Studio's debugger for step-through debugging
-- Monitor memory usage for large chat histories
+    try
+    {
+        var response = await httpClient.PostAsync(OpenAIApiUrl, content);
+        string responseContent = await response.Content.ReadAsStringAsync();
 
-## 🤝 Contributing
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonResponse = JsonSerializer.Deserialize<OpenAIResponse>(responseContent, options);
+            return jsonResponse!.Choices![0].Message!.Content!;
+        }
+        else
+        {
+            return $"API Error: {response.StatusCode} - {responseContent}";
+        }
+    }
+    catch (Exception ex)
+    {
+        return $"Request failed: {ex.Message}";
+    }
+}
+```
 
-This template is designed to be extended and customized. Feel free to:
-- Add new features and functionality
-- Improve the UI/UX design
-- Enhance the response logic
-- Add support for additional platforms
+Finally, update the calling code in `ChatUI.cs` (or wherever `GetDeepSeekResponseAsync` is invoked) to call `GetOpenAIResponseAsync` instead.
 
-## 📄 License
+> **Note**: The same pattern works for any OpenAI-compatible API provider (e.g., Azure OpenAI, Groq, Together AI, etc.). Simply change the `OpenAIApiUrl` constant and the `Model` name to match your provider's endpoint.
 
-This project is licensed under the BSD-3-Clause License. See the [LICENSE](LICENSE) file for more details.
+### Swapping LLM Provider (VB.NET Example)
 
-## 🔗 Related Resources
+Here's the equivalent modification for the VB.NET template (`ChatBotLogic.vb`).
 
-- [MonoGame Documentation](https://docs.monogame.net/)
-- [.NET Documentation](https://docs.microsoft.com/en-us/dotnet/)
-- [MonoGame Community](https://community.monogame.net/)
+First, add these model classes alongside the existing `Message` and `Choice` classes:
+
+```vb
+Public NotInheritable Class OpenAIRequest
+    Public Property Model As String = "gpt-4o-mini"
+    Public Property Messages As List(Of Message)
+    Public Property Temperature As Double = 0.7
+    <JsonPropertyName("max_tokens")> Public Property MaxTokens As Integer = 500
+End Class
+
+Public NotInheritable Class OpenAIResponse
+    Public Property Choices As List(Of Choice)
+    <JsonPropertyName("usage")> Public Property Usage As UsageInfo
+End Class
+
+Public NotInheritable Class UsageInfo
+    <JsonPropertyName("prompt_tokens")> Public Property PromptTokens As Integer
+    <JsonPropertyName("completion_tokens")> Public Property CompletionTokens As Integer
+    <JsonPropertyName("total_tokens")> Public Property TotalTokens As Integer
+End Class
+```
+
+Then, replace the `GetDeepSeekResponseAsync` method (and its associated `DEEPSEEK_API_URL` constant) with this OpenAI version:
+
+```vb
+Private Const OPENAI_API_URL As String = "https://api.openai.com/v1/chat/completions"
+
+Public Async Function GetOpenAIResponseAsync _
+        (userMessage As String, Optional conversationHistory As List(Of Message) = Nothing) _
+        As Task(Of String)
+    Using httpClient As New HttpClient
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.ApiKey}")
+
+        Dim messages As New List(Of Message) From {
+            New Message With {
+                .Role = "system",
+                .Content = String.Join(vbCrLf, Config.SystemPrompt)
+            }
+        }
+
+        If conversationHistory IsNot Nothing Then
+            For Each msg As Message In conversationHistory
+                messages.Add(New Message With {.Role = msg.Role, .Content = msg.Content})
+            Next msg
+        End If
+        messages.Add(New Message With {.Role = "user", .Content = userMessage})
+
+        Dim requestBody As New OpenAIRequest With {
+            .Model = "gpt-4o-mini",
+            .Messages = messages,
+            .Temperature = Config.ModelParams.Temperature,
+            .MaxTokens = Config.ModelParams.MaxTokens
+        }
+
+        Dim options As New JsonSerializerOptions With {
+            .PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            .DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        }
+        Dim jsonContent As String = JsonSerializer.Serialize(requestBody, options)
+        Dim content As New StringContent(jsonContent, Encoding.UTF8, "application/json")
+
+        Try
+            Dim response = Await httpClient.PostAsync(OPENAI_API_URL, content)
+            Dim responseContent = Await response.Content.ReadAsStringAsync()
+
+            If response.IsSuccessStatusCode Then
+                Dim jsonResponse =
+                    JsonSerializer.Deserialize(Of OpenAIResponse)(responseContent, options)
+                Return jsonResponse.Choices(0).Message.Content
+            Else
+                Return $"API Error: {response.StatusCode} - {responseContent}"
+            End If
+        Catch ex As Exception
+            Return $"Request failed: {ex.Message}"
+        End Try
+    End Using
+End Function
+```
+
+> **Note**: The same pattern works for any OpenAI-compatible API provider. Just update `OPENAI_API_URL` and the `Model` name to match your provider's endpoint.
+
+### Other OpenAI-Compatible Providers
+
+Since both DeepSeek and OpenAI use the same chat completions API format, you can easily switch to any OpenAI-compatible provider by changing just the endpoint URL and model name:
+
+| Provider | API URL | Example Model |
+|----------|---------|---------------|
+| **DeepSeek** (default) | `https://api.deepseek.com/chat/completions` | `deepseek-v4-flash` |
+| **OpenAI** | `https://api.openai.com/v1/chat/completions` | `gpt-4o-mini`, `gpt-4o` |
+| **Azure OpenAI** | `https://{your-resource}.openai.azure.com/openai/deployments/{deployment-name}/chat/completions?api-version=2024-08-01-preview` | deployment name |
+| **Groq** | `https://api.groq.com/openai/v1/chat/completions` | `llama-3.3-70b-versatile` |
+| **Together AI** | `https://api.together.xyz/v1/chat/completions` | `mistralai/Mixtral-8x7B-Instruct-v0.1` |
+| **Anthropic** (via API proxy) | `https://api.anthropic.com/v1/messages` | `claude-3-5-sonnet-20241022` |
+
+> **Note**: Anthropic uses a different request/response format. For Anthropic, you would need to adjust the request body structure to match their Messages API format.
+
+## License
+
+This project is licensed under the BSD 3-Clause License. See the [LICENSE](LICENSE) file for details.
